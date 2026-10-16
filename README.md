@@ -1,3 +1,5 @@
+COMPLETED REQUIREMENTS AND DEBUGGING PROOF
+
 1. Smart Task Counter 
     > Debugging case
     
