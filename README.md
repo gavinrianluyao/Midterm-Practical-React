@@ -1,6 +1,7 @@
 1. Smart Task Counter 
     > Debugging case
-        I reproduced the bug and found that both `setCount(count + 1)` calls read the same `count` value captured by the event handler. React batches them, so both request the same next value and the count rises by only one. I fixed this with functional updates, which React applies in sequence to the latest queued state: `setCount(current => current + 1)` called twice, or one update such as `setCount(current => Math.min(current + 2, target))`. I kept the clamp so the count cannot exceed the target.
+
+        a. I reproduced the bug and found that both `setCount(count + 1)` calls read the same `count` value captured by the event handler. React batches them, so both request the same next value and the count rises by only one. I fixed this with functional updates, which React applies in sequence to the latest queued state: `setCount(current => current + 1)` called twice, or one update such as `setCount(current => Math.min(current + 2, target))`. I kept the clamp so the count cannot exceed the target.
     
 2. Live Search and Timer 
     > Debugging cases
@@ -13,7 +14,8 @@
 
 3. Accessible Form Toolkit 
     > Debugging case
-        I found that `clicksRef.current += 1` changed the ref but did not schedule a React render, which left the displayed count unchanged. I replaced the displayed value with state: `const [clicks, setClicks] = useState(0)`, updated using `setClicks(current => current + 1)`. I kept refs for DOM access and values that do not need to appear in the rendered output.
+
+        a. I found that `clicksRef.current += 1` changed the ref but did not schedule a React render, which left the displayed count unchanged. I replaced the displayed value with state: `const [clicks, setClicks] = useState(0)`, updated using `setClicks(current => current + 1)`. I kept refs for DOM access and values that do not need to appear in the rendered output.
 
 
 4. Application Preferences 
@@ -27,6 +29,7 @@
 
 5. Product Explorer Performance Repair
     > Requirement
+
         I verified that `products.js` generates 500 local product records with an id, name, category, and price, meeting the starter-data requirement without a network request.
 
         I memoized filtering and sorting with `useMemo` because searching the full product array is more work than a trivial render calculation. I included the source products, query, category, and sort order in its dependencies so each filter change produces current results. I wrapped `ProductList` in `React.memo` and pass it the memoized result, selected id, and a `useCallback` selection handler. I verified that changing the unrelated counter does not commit another product-list render. I log render evidence from `useEffect`, not from the memo calculation.
