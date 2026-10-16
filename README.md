@@ -4,6 +4,7 @@
     
 2. Live Search and Timer 
     > Debugging cases
+
         a. I fixed the repeated effect by making the query its trigger and not depending on the state the effect updates. I debounce with `useEffect(() => { const id = setTimeout(() => setDebouncedQuery(query), 350); return () => clearTimeout(id) }, [query])`, so the effect reruns when the query changes rather than when the debounced result changes.
 
         b. I fixed the stale timer by changing the callback to `setSeconds(current => current + 1)`. The functional update reads the latest state on every tick. Because the callback has no other changing dependencies, I create the interval once with an empty dependency list.
@@ -17,6 +18,7 @@
 
 4. Application Preferences 
     > Debugging cases
+
         a. I fixed the default-only consumer by wrapping the dashboard's common ancestor with `<PreferencesProvider>`. Consumers now read the value from the nearest matching provider instead of falling back to the context default.
 
         b. I moved context creation into one shared module and imported that exact object in both provider and consumer code. I found that separate `createContext()` calls create different identities, so a provider using one object cannot supply a consumer using the other.
@@ -34,6 +36,7 @@
         I kept the `useMemo` calculation pure because React may rerun or discard it. I moved analytics and other side effects to `useEffect` (or an event handler), rather than running them inside the memo callback.
 
     > Debugging cases
+
         a. I repaired the stale search by adding every value read by the calculation to the `useMemo` dependency list: `[products, query, category, sortOrder]`. Omitting `query` kept the old memoized result when the search text changed.
 
         b. I fixed the stale selection callback by ensuring changing project or selected-item values it captures are dependencies. In this case, I used a functional update, `setSelectedId(current => current === id ? null : id)`, so the callback no longer captures the selected value and can safely use an empty dependency list.
@@ -42,6 +45,7 @@
 
 6. Issue Tracker State Engine 
     > Debugging cases
+
         a. I removed direct state and issue-object mutation. For toggling, I map to a new array and return a copied target issue: `issues.map(issue => issue.id === id ? { ...issue, done: !issue.done } : issue)`. I also create new arrays and a new state object for additions and deletions.
 
         b. I made the action shape consistent between dispatch and the reducer. Since the reducer reads `action.payload.title`, I dispatch `{ type: 'ADD_ISSUE', payload: { title } }`. For toggle/delete, I dispatch an object payload such as `{ type: 'TOGGLE_ISSUE', payload: { id } }` and read `action.payload.id`.
